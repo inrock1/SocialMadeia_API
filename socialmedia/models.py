@@ -1,19 +1,31 @@
-# from django.contrib.auth.base_user import BaseUserManager
-# from django.contrib.auth.models import AbstractUser
-# from django.db import models
-# from django.utils.translation import gettext as _
+import os
+import uuid
+
+from django.contrib.auth.base_user import BaseUserManager
+from django.contrib.auth.models import AbstractUser
+from django.db import models
+from django.utils.translation import gettext as _
+from user.models import User
+from django.utils.text import slugify
 
 
-# class Profile(models.Model):
-#     user = models.OneToOneField(User, on_delete=models.CASCADE)
-#     bio = models.CharField(max_length=300, blank=True)
-#     profile_picture = models.ImageField(upload_to='profile_pictures', blank=True)
-#     followers = models.ManyToManyField(User, related_name='following', blank=True)
-#
-#     def __str__(self):
-#         return self.user.username
-#
-#
+def create_custom_path(instance, filename):
+    _, extension = os.path.splitext(filename)
+    filename = f"{slugify(instance.title)}-{uuid.uuid4()}{extension}"
+    return os.path.join("uploads/movies/", filename)
+
+
+class Profile(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    bio = models.CharField(max_length=300, blank=True)
+    profile_picture = models.ImageField(upload_to='create_custom_path', null=True, blank=True)
+    # profile_picture = models.ImageField(null=True, upload_to="uploads/")
+    followers = models.ManyToManyField(User, related_name='following', blank=True)
+
+    def __str__(self):
+        return self.user.username
+
+
 # class Post(models.Model):
 #     user = models.ForeignKey(User, on_delete=models.CASCADE)
 #     content = models.TextField()

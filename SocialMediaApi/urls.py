@@ -31,6 +31,7 @@ urlpatterns = [
     path("api/doc/swagger/", SpectacularSwaggerView.as_view(url_name="schema"), name="swagger-ui"),
     path("api/doc/redoc/", SpectacularRedocView.as_view(url_name="schema"), name="redoc"),
     path("api/user/", include("user.urls", namespace="user")),
+    path("api/socialmedia/", include("socialmedia.urls", namespace="socialmedia")),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
 #     path("api/socialmedia/", include("socialmedia.urls", namespace="socialmedia")),
