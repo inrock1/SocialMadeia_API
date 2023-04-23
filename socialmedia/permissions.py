@@ -1,30 +1,21 @@
-# from rest_framework.permissions import SAFE_METHODS, BasePermission
-
-
-# class IsAdminOrIfAuthenticatedReadOnly(BasePermission):
-#     def has_permission(self, request, view):
-#         return bool(
-#             (
-#                 request.method in SAFE_METHODS
-#                 and request.user
-#                 and request.user.is_authenticated
-#             )
-#             or (request.user and request.user.is_staff)
-#         )
-
-
 from rest_framework import permissions
+
+from socialmedia.models import Profile
 
 
 class IsOwnerOrReadOnly(permissions.BasePermission):
     """
     Custom permission to only allow owners of an object to edit it.
     """
-    def has_object_permission(self, request, view, obj):
-        # Read permissions are allowed to any request,
-        # so we'll always allow GET, HEAD or OPTIONS requests.
-        if request.method in permissions.SAFE_METHODS:
-            return True
 
-        # Write permissions are only allowed to the owner of the object.
-        return obj.owner == request.user
+    def has_object_permission(self, request, view, obj):
+        # Check if the object being accessed is a user profile object
+        if isinstance(obj, Profile):
+            # Only allow owners of the profile to edit it
+            return obj.user == request.user
+
+        # For non-user profile objects, allow safe methods (e.g. GET) for everyone
+        # and write methods (e.g. POST, PUT, DELETE) only for authenticated users
+        return (
+            request.method in permissions.SAFE_METHODS or request.user.is_authenticated
+        )
